@@ -18,7 +18,7 @@ var svg = d3
   .select("#scatter")
   .append("svg")
   .attr("width", svgWidth)
-  .attr("height", svgHeight);
+  .attr("height", svgHeight)
 
 // Append an SVG group
 var chartGroup = svg.append("g")
@@ -85,6 +85,16 @@ function renderCircles(circlesGroup, newXScale, chosenXaxis, newYScale, chosenYa
     .attr("cy", d => newYScale(d[chosenYAxis]));
 
   return circlesGroup;
+}
+
+function renderText(circlesText, newXScale, chosenXaxis, newYScale, chosenYaxis) {
+
+  circlesText.transition()
+    .duration(1000)
+    .attr("dx", d => newXScale(d[chosenXAxis]) - 6)
+    .attr("dy", d => newYScale(d[chosenYAxis]) + 3);
+
+  return circlesText;
 }
 
 // function used for updating circles group with new tooltip
@@ -160,18 +170,45 @@ d3.csv(csv).then(function(newsData) {
     .classed("y-axis", true)
     .call(leftAxis);
 
+
+        /* Define the data for the circles */
+        var elem = svg.selectAll("g")
+            .data(newsData)
+
+        /*Create and place the "blocks" containing the circle and the text */
+        var elemEnter = elem.enter()
+            .append("g")
+            .attr("transform", d => `translate(${margin.left},0)`)
+
+        /*Create the circle for each block */
+        var circlesGroup = elemEnter.append("circle")
+          .attr("cx", d => xLinearScale(d[chosenXAxis]))
+          .attr("cy", d => yLinearScale(d[chosenYAxis]))
+          .attr("r", 10)
+          .attr("stroke", "white")
+          .attr("stroke-width", "1")
+          .attr("fill", "lightseagreen")
+          .attr("opacity", "1")
+
+        /* Create the text for each block */
+        var circlesText = elemEnter.append("text")
+          .text(d => d.abbr)
+          .attr("dx", d => xLinearScale(d[chosenXAxis]) - 6)
+          .attr("dy", d => yLinearScale(d[chosenYAxis]) + 3)
+          .attr("id","abbr");
+
   // append initial circles
-  var circlesGroup = chartGroup.selectAll("circle")
-    .data(newsData)
-    .enter()
-    .append("circle")
-    .attr("cx", d => xLinearScale(d[chosenXAxis]))
-    .attr("cy", d => yLinearScale(d[chosenYAxis]))
-    .attr("r", 10)
-    .attr("stroke", "white")
-    .attr("stroke-width", "1")
-    .attr("fill", "lightseagreen")
-    .attr("opacity", "1");
+  // var circlesGroup = chartGroup.selectAll("circle")
+  //   .data(newsData)
+  //   .enter()
+  //   .append("circle")
+  //     .attr("cx", d => xLinearScale(d[chosenXAxis]))
+  //     .attr("cy", d => yLinearScale(d[chosenYAxis]))
+  //     .attr("r", 10)
+  //     .attr("stroke", "white")
+  //     .attr("stroke-width", "1")
+  //     .attr("fill", "lightseagreen")
+  //     .attr("opacity", "1")
 
   // Create group for  3 x- axis labels
   var xLabelsGroup = chartGroup.append("g")
@@ -225,7 +262,7 @@ d3.csv(csv).then(function(newsData) {
 
 
   // updateToolTip function above csv import
-  var circlesGroup = updateToolTip(chosenXAxis, circlesGroup);
+  // var circlesGroup = updateToolTip(chosenXAxis, circlesGroup);
 
   // x axis labels event listener
   xLabelsGroup.selectAll("text")
@@ -246,9 +283,10 @@ d3.csv(csv).then(function(newsData) {
 
         // updates circles with new x values
         circlesGroup = renderCircles(circlesGroup, xLinearScale, chosenXAxis, yLinearScale, chosenYAxis);
+        circlesText = renderText(circlesText, xLinearScale, chosenXAxis, yLinearScale, chosenYAxis);
 
         // updates tooltips with new info
-        circlesGroup = updateToolTip(chosenXAxis, circlesGroup);
+        // circlesGroup = updateToolTip(chosenXAxis, circlesGroup);
 
         // changes classes to change bold text
         switch(chosenXAxis){
@@ -311,9 +349,10 @@ d3.csv(csv).then(function(newsData) {
 
           // updates circles with new y values
           circlesGroup = renderCircles(circlesGroup, xLinearScale, chosenXAxis, yLinearScale, chosenYAxis);
+          circlesText = renderText(circlesText, xLinearScale, chosenXAxis, yLinearScale, chosenYAxis);
 
           // updates tooltips with new info
-          circlesGroup = updateToolTip(chosenXAxis, circlesGroup);
+          // circlesGroup = updateToolTip(chosenXAxis, circlesGroup);
 
           // changes classes to change bold text
           switch(chosenYAxis){
