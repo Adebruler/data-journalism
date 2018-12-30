@@ -1,5 +1,5 @@
 
-var svgWidth = 900;
+var svgWidth = 800;
 var svgHeight = 500;
 
 var margin = {
@@ -11,6 +11,11 @@ var margin = {
 
 var width = svgWidth - margin.left - margin.right;
 var height = svgHeight - margin.top - margin.bottom;
+
+// Select paragraphs to change visibilty with selected x-axis
+// var p_poverty = d3.selectall("p_poverty");
+// var p_age = d3.selectall("#p_age");
+// var p_income = d3.selectall("#p_income");
 
 // Create an SVG wrapper, append an SVG group that will hold our chart,
 // and shift the latter by left and top margins.
@@ -172,12 +177,13 @@ d3.csv(csv).then(function(newsData) {
 
 
         /* Define the data for the circles */
-        var elem = svg.selectAll("g")
+        var elem = svg.selectAll(".blockg")
             .data(newsData)
 
         /*Create and place the "blocks" containing the circle and the text */
         var elemEnter = elem.enter()
             .append("g")
+            .attr("class","blockg")
             .attr("transform", d => `translate(${margin.left},0)`)
 
         /*Create the circle for each block */
@@ -187,7 +193,7 @@ d3.csv(csv).then(function(newsData) {
           .attr("r", 10)
           .attr("stroke", "white")
           .attr("stroke-width", "1")
-          .attr("fill", "lightseagreen")
+          .attr("fill", "darkseagreen")
           .attr("opacity", "1")
 
         /* Create the text for each block */
@@ -195,6 +201,7 @@ d3.csv(csv).then(function(newsData) {
           .text(d => d.abbr)
           .attr("dx", d => xLinearScale(d[chosenXAxis]) - 6)
           .attr("dy", d => yLinearScale(d[chosenYAxis]) + 3)
+          .attr("fill", "white")
           .attr("id","abbr");
 
   // append initial circles
@@ -300,6 +307,12 @@ d3.csv(csv).then(function(newsData) {
             incomeLabel
               .classed("active", false)
               .classed("inactive", true);
+            p_age
+              .classed("invisible", true);
+            p_poverty
+              .classed("invisible", false);
+            p_income
+              .classed("invisible", false);
             break;
           case 'poverty':
             ageLabel
@@ -311,6 +324,12 @@ d3.csv(csv).then(function(newsData) {
             incomeLabel
               .classed("active", false)
               .classed("inactive", true);
+            p_age
+              .classed("invisible", false);
+            p_poverty
+              .classed("invisible", true);
+            p_income
+              .classed("invisible", false);
             break;
           case 'income':
             ageLabel
@@ -322,6 +341,12 @@ d3.csv(csv).then(function(newsData) {
             incomeLabel
               .classed("active", true)
               .classed("inactive", false);
+            p_age
+              .classed("invisible", false);
+            p_poverty
+              .classed("invisible", false);
+            p_income
+              .classed("invisible", true);
             break;
 
         }
